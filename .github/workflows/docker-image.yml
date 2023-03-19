@@ -1,4 +1,4 @@
-name: PipilineDeployDocker
+name: PipelineDeployDocker
 on: workflow_dispatch
 jobs:
   logs:
@@ -9,4 +9,4 @@ jobs:
       - name: Run Docker
         run: docker-compose up -d
       - name: Print logs
-        run: docker-compose logs pipline
+        run: docker-compose logs pipeline
