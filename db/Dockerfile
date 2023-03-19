@@ -1,0 +1,8 @@
+FROM mysql:latest
+WORKDIR /db
+
+ENV MYSQL_ROOT_PASSWORD=admin
+ENV MYSQL_DATABASE=pipelinedb
+ENV MYSQL_HOST=db
+
+COPY . .

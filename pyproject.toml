@@ -10,6 +10,7 @@ python = "^3.10"
 click = "^8.1.3"
 mysql = "^0.0.3"
 mysql-connector-python = "^8.0.32"
+pipeline = "^0.1.0"
 
 
 [build-system]

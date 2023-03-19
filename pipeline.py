@@ -9,7 +9,7 @@ TASKS = [
     # tasks.RunSQL('drop table `domain`'),
     # tasks.RunSQL('drop table `norm`'),
 
-    tasks.LoadFile(input_file='original/original.csv', table='domain'),
+    tasks.LoadFile(input_file='example_pipeline/original/original.csv', table='domain'),
 
     tasks.CTAS(
         table='norm',

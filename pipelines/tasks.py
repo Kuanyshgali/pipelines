@@ -27,7 +27,7 @@ class CopyToFile(BaseTask):
         config = {
             'user': 'root',
             'password': 'admin',
-            'host': 'localhost',
+            'host': 'db',
             'database': 'pipelinedb'
         }
 
@@ -68,7 +68,8 @@ class LoadFile(BaseTask):
         config = {
             'user': 'root',
             'password': 'admin',
-            'host': 'localhost',
+            'host': 'db',
+            'port': '3306',
             'database': 'pipelinedb'
         }
 
@@ -107,7 +108,7 @@ class RunSQL(BaseTask):
     def run(self):
         # Подключение к базе данных MySQL
         db = mysql.connector.connect(
-            host="localhost",
+            host="db",
             user="root",
             password="admin",
             database="pipelinedb"
@@ -143,7 +144,7 @@ class CTAS(BaseTask):
 
     def run(self):
         con = mysql.connector.connect(
-            host="localhost",
+            host="db",
             user="root",
             password="admin",
             database="pipelinedb"
