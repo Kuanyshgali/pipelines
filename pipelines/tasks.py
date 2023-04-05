@@ -86,11 +86,11 @@ class LoadFile(BaseTask):
                     temp = ()
                     for i in range(rowLen):  # измените этот диапазон, чтобы использовать нужные индексы столбцов
                         temp += (row[i],)
-                        print(row)
                     data.append(temp)
         columns = ', '.join([f'column{colNum + 1} VARCHAR(45) NULL' for colNum in range(rowLen - 1)])
+        values = ', '.join([f'%s' for colNum in range(rowLen)])
         cur.execute(f"CREATE TABLE {self.table} (id INT NOT NULL AUTO_INCREMENT, {columns}, PRIMARY KEY (id), UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);")
-        cur.executemany(f"INSERT INTO {self.table} VALUES (%s, %s, %s)", data)
+        cur.executemany(f"INSERT INTO {self.table} VALUES ({values})", data)
         con.commit()
 
         # Закрытие соединения с базой данных
