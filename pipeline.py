@@ -13,8 +13,9 @@ TASKS = [
 
     tasks.CTAS(
         table='norm',
+        columnNum='column2',
         sql_query="""
-            select *, domain_of_url(url)
+            select *, domain_of_url(column2)
             from `domain`;
         """
     ),

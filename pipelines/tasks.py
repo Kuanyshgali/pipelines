@@ -27,7 +27,7 @@ class CopyToFile(BaseTask):
         config = {
             'user': 'root',
             'password': 'admin',
-            'host': 'db',
+            'host': 'localhost',
             'database': 'pipelinedb'
         }
 
@@ -68,7 +68,7 @@ class LoadFile(BaseTask):
         config = {
             'user': 'root',
             'password': 'admin',
-            'host': 'db',
+            'host': 'localhost',
             'port': '3306',
             'database': 'pipelinedb'
         }
@@ -77,14 +77,19 @@ class LoadFile(BaseTask):
         cur = con.cursor()
 
         data = []
+        rowLen = 0
         with open(self.input_file, newline='') as File:
             reader = csv.reader(File)
             for row in reader:
                 if (row[0] != 'id'):
-                    temp = (row[0], row[1], row[2])
+                    rowLen = len(row)
+                    temp = ()
+                    for i in range(rowLen):  # измените этот диапазон, чтобы использовать нужные индексы столбцов
+                        temp += (row[i],)
+                        print(row)
                     data.append(temp)
-
-        cur.execute(f"CREATE TABLE {self.table} (id INT NOT NULL AUTO_INCREMENT, name VARCHAR(45) NULL, url VARCHAR(45) NULL, PRIMARY KEY (id), UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);")
+        columns = ', '.join([f'column{colNum + 1} VARCHAR(45) NULL' for colNum in range(rowLen - 1)])
+        cur.execute(f"CREATE TABLE {self.table} (id INT NOT NULL AUTO_INCREMENT, {columns}, PRIMARY KEY (id), UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);")
         cur.executemany(f"INSERT INTO {self.table} VALUES (%s, %s, %s)", data)
         con.commit()
 
@@ -108,7 +113,7 @@ class RunSQL(BaseTask):
     def run(self):
         # Подключение к базе данных MySQL
         db = mysql.connector.connect(
-            host="db",
+            host="localhost",
             user="root",
             password="admin",
             database="pipelinedb"
@@ -134,17 +139,18 @@ class RunSQL(BaseTask):
 class CTAS(BaseTask):
     """SQL Create Table As Task"""
 
-    def __init__(self, table, sql_query, title=None):
+    def __init__(self, table, sql_query, columnNum, title=None):
         self.table = table
         self.sql_query = sql_query
         self.title = title or table
+        self.columnNum = columnNum
 
     def short_description(self):
         return f'{self.title}'
 
     def run(self):
         con = mysql.connector.connect(
-            host="db",
+            host="localhost",
             user="root",
             password="admin",
             database="pipelinedb"
@@ -161,11 +167,11 @@ class CTAS(BaseTask):
         # Check if the function exists
         if function_result is None:
             # Define the SQL query to create the function as a string
-            sql_create_function = """
+            sql_create_function = f"""
                     CREATE FUNCTION domain_of_url(url TEXT) RETURNS TEXT DETERMINISTIC
                     BEGIN
                         DECLARE res TEXT;
-                        SET res = SUBSTRING_INDEX(SUBSTRING_INDEX(url, '://', -1), '/', 1);
+                        SET res = SUBSTRING_INDEX(SUBSTRING_INDEX({self.columnNum}, '://', -1), '/', 1);
                         RETURN res;
                     END
                 """
